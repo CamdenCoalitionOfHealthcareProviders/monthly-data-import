@@ -9,10 +9,8 @@ uhi<-read.csv(paste(path, "UhiHIEIDs-2016-02-03.csv", sep=""), stringsAsFactors 
 # Renames fields
 uhi<-reshape::rename(uhi, c(HOME_PHONE_NUM="HOME_PHONE_NUMBER"))
 uhi<-reshape::rename(uhi, c(MEMB_INSURANCE="PAYER"))
-uhi<-reshape::rename(uhi, c(?..Reg.Patient.MRN="Reg.Patient.MRN"))
-allpayers<-reshape::rename(allpayers, c(?..BUS_PHONE_NUMBER="BUS_PHONE_NUMBER"))
-
-# Ã¯.. 
+uhi<-reshape::rename(uhi, c(ï..Reg.Patient.MRN="Reg.Patient.MRN"))
+allpayers<-reshape::rename(allpayers, c(ï..BUS_PHONE_NUMBER="BUS_PHONE_NUMBER"))
 
 # Adds NIC to the uhi Subscriber ID if it's not there 
 uhi$SUBSCRIBER_ID<-ifelse(grepl("NIC", uhi$SUBSCRIBER_ID), uhi$SUBSCRIBER_ID, paste("NIC", uhi$SUBSCRIBER_ID, sep=""))
@@ -21,28 +19,28 @@ uhi$SUBSCRIBER_ID<-ifelse(grepl("NIC", uhi$SUBSCRIBER_ID), uhi$SUBSCRIBER_ID, pa
 uhi$Reg.Patient.MRN <- NULL
 uhi$MEMB_NAME<- NULL
 allpayers$MEMB_NAME <- NULL
-allpayers$X.1<-NULL
-allpayers$X<-NULL
-uhi$X<-NULL
+allpayers$X.1 <- NULL
+allpayers$X <- NULL
+uhi$X <- NULL
 
 # Adds capitation date field
-uhi$LastCapitationDate  <-	format(Sys.time(), "%m/01/%Y") 
+uhi$LastCapitationDate <- format(Sys.time(), "%m/01/%Y") 
 
 # Creates fields with blank values
-uhi$BUS_PHONE_NUMBER	<-	"NA"
-uhi$CURR_PCP_ADDRESS_LINE_1	<-	"NA"
-uhi$CURR_PCP_ADDRESS_LINE_2	<-	"NA"
-uhi$CURR_PCP_CITY	<-	"NA"
-uhi$CURR_PCP_ID	<-	"NA"
-uhi$CURR_PCP_STATE	<-	"NA"
-uhi$CURR_PCP_ZIP	<-	"NA"
-uhi$IRS_TAX_ID	<-	"NA"
-uhi$MEDICAID_NO	<-	"NA"
-uhi$MEDICARE_NO	<-	"NA"
-uhi$PAYER	<-	"NA"
-uhi$PHONE_NUMBER	<-	"NA"
-uhi$VENDOR_ID	<-	"NA"
-uhi$PRACTICE	<-	"NA"
+uhi$BUS_PHONE_NUMBER	<- "NA"
+uhi$CURR_PCP_ADDRESS_LINE_1	<- "NA"
+uhi$CURR_PCP_ADDRESS_LINE_2	<- "NA"
+uhi$CURR_PCP_CITY	<- "NA"
+uhi$CURR_PCP_ID	<- "NA"
+uhi$CURR_PCP_STATE	<- "NA"
+uhi$CURR_PCP_ZIP	<- "NA"
+uhi$IRS_TAX_ID	<- "NA"
+uhi$MEDICAID_NO	<- "NA"
+uhi$MEDICARE_NO	<- "NA"
+uhi$PAYER	<- "NA"
+uhi$PHONE_NUMBER	<- "NA"
+uhi$VENDOR_ID	<- "NA"
+uhi$PRACTICE	<- "NA"
 
 # Sorts columns in both files
 allpayers<-allpayers[,order(names(allpayers))]
@@ -70,23 +68,21 @@ twins<-subset(combined,
               combined$SUBSCRIBER_ID=="H71260169" |
               combined$SUBSCRIBER_ID=="H71260168" |
               combined$SUBSCRIBER_ID=="H71514576" |
-              combined$SUBSCRIBER_ID=="H71514574" |
-                )
+              combined$SUBSCRIBER_ID=="H71514574"
+              )
 
 # Subsets values that are TRUE for duplicate and are not a twin
 duplicates<-subset(combined, combined$duplicate==TRUE & !combined$SUBSCRIBER_ID %in% twins$SUBSCRIBER_ID)
 
 # Identifies variables to export
 duplicates<-duplicates[,c("HIEID",
-                    "Source",
-                    "SUBSCRIBER_ID",
-                    "VEND_FULL_NAME")]
+                          "PRACTICE",
+                          "Source",
+                          "SUBSCRIBER_ID",
+                          "VEND_FULL_NAME")]
 
 # Subsets values that are FALSE for duplicate and are not a twin
 uniques<-subset(combined, combined$duplicate==FALSE& !combined$SUBSCRIBER_ID %in% twins$SUBSCRIBER_ID)
-
-# Removes Practice field from Uniques
-uniques$PRACTICE<-NULL
 
 # Renames HIEID field
 uniques<-reshape::rename(uniques, c(HIEID="Patient ID HIE"))
