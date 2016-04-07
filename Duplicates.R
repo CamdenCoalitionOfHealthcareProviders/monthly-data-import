@@ -1,10 +1,14 @@
 suppressMessages(require(reshape))
 
-path<-"Y:/Monthly Import/Feb 2016/"
-  
+# Itir's path
+path<-"Y:/Data Share Monthly/All Payers/"
+
+# Jay's path
+#path<-"Y:/Monthly Import/Feb 2016/"
+
 # Reads in files
-allpayers<-read.csv(paste(path, "AllPayerHIEIDs-2016-02-03.csv", sep=""), stringsAsFactors = FALSE)
-uhi<-read.csv(paste(path, "UhiHIEIDs-2016-02-03.csv", sep=""), stringsAsFactors = FALSE)
+allpayers<-read.csv(paste(path, "AllPayerHIEIDs-2016-04-06.csv", sep=""), stringsAsFactors = FALSE)
+uhi<-read.csv(paste(path, "UhiHIEIDs-2016-04-06.csv", sep=""), stringsAsFactors = FALSE)
 
 # Subsets out CAMcare data
 camcare<-subset(allpayers, allpayers$VEND_FULL_NAME=="CAMCARE HEALTH CORPORATION")
@@ -58,6 +62,10 @@ uhi<-uhi[,order(names(uhi))]
 
 # Binds files horizontally
 combined<-rbind(allpayers, uhi)
+
+# Removes spaces from the phone number fields
+combined$HOME_PHONE_NUMBER <- gsub(" ", "", combined$HOME_PHONE_NUMBER) 
+combined$PHONE_NUMBER <- gsub(" ", "", combined$PHONE_NUMBER)
 
 # Changes case of HIE ID to lowercase
 combined$HIEID<-tolower(combined$HIEID)
