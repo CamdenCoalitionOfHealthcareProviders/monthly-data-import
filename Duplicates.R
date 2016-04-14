@@ -150,6 +150,10 @@ uniques$duplicate<-NULL
 uniques$duplicate2<-NULL
 uniques$dupetype<-NULL
 
+# Adds fields to identify the data as ones imported in bulk from cap list
+twins$MonthlyBulkImport <- "Monthly Import"
+uniques$MonthlyBulkImport <- "Monthly Import"
+
 # Exports files
 write.csv(twins, paste(Sys.Date(), "-",file="Twins-New-HIE-ID",".csv", sep=""), row.names = FALSE)
 write.csv(duplicates, paste(Sys.Date(), "-",file="HIE-Delete",".csv", sep=""), row.names = FALSE)
