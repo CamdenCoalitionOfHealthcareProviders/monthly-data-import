@@ -4,7 +4,7 @@ suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
 # Sets working directory, reads file and creates a nickname
-wd <- setwd("Y:/CAMcare")
+wd <- setwd("Y:/monthly import/may2016")
 date <- format(Sys.Date(), "%B%Y")
 
 # Reads in file whose file name is formatted January2016CAMCareCapList.csv
@@ -119,4 +119,4 @@ AllPayers$LastCapitationDate <-  format(Sys.time(), "%m/01/%Y")
 # AllPayers$SUBSCRIBER_ID <- gsub("U", "", AllPayers$SUBSCRIBER_ID)
 
 # Exports file for CareEvolution
-write.csv(AllPayers, (file=paste(format(Sys.Date(), "%Y-%m-%d-"),"AllPayers",  ".csv", sep="")), row.names=FALSE)
+write.csv(AllPayers, (file=paste(format(Sys.Date(), "%Y-%m-%d-"),"UnitedCAMCare",  ".csv", sep="")), row.names=FALSE)
