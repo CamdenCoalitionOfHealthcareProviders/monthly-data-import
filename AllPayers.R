@@ -4,7 +4,7 @@ suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
 # Sets working directory, reads file and creates a nickname#
-wd<-setwd("Y:/Monthly Import/Feb 2016")
+wd<-setwd("Y:/monthly import/201608")
 date<-format(Sys.Date(), "%B%Y")
 
 # Reads in files in format March2015Horizon.csv
@@ -142,6 +142,8 @@ AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER FAMILY MEDICINE PC"] <- "
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER PEDIATRICS"] <- "Cooper Pediatrics"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER HEALTH SYSTEM PEDIATRICS DEPARTMENT"] <- "Cooper Pediatrics"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER HEALTH SYSTEM - PEDIATRICS DEPARTMENT "] <- "Cooper Pediatrics"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER HEALTH SYSTEM  PEDIATRICS DEPARTMENT"] <- "Cooper Pediatrics"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER HEALTH SYSTEM - PEDIATRICS DEPARTMENT"] <- "Cooper Pediatrics"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER PHYSICIANS OFFICES"] <- "Cooper IM"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER PHYSICIAN OFFICES PA"] <- "Cooper IM"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "Cooper_UHI_Nic"] <- "Cooper IM"
@@ -155,6 +157,7 @@ AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RIVER PRIMARY CARE CENTER"] <- "
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MED  SVCS"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKES CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE’S CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA FAMILY MEDICINE-COOPER RIVER"] <- "Virtua"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA MEDICAL GROUP"] <- "Virtua"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA MEDICAL GROUP PA"] <- "Virtua"
