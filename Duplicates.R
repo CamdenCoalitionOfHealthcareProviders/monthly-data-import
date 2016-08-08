@@ -1,14 +1,14 @@
 suppressMessages(require(reshape))
 
 # Itir's path
-path<-"Y:/Data Share Monthly/All Payers/"
+#path<-"Y:/Data Share Monthly/All Payers/"
 
 # Jay's path
-#path<-"Y:/Monthly Import/Feb 2016/"
+path<-"Y:/Monthly Import/Feb 2016/"
 
 # Reads in files
-allpayers<-read.csv(paste(path, "AllPayerHIEIDs-2016-04-06.csv", sep=""), stringsAsFactors = FALSE)
-uhi<-read.csv(paste(path, "UhiHIEIDs-2016-04-06.csv", sep=""), stringsAsFactors = FALSE)
+allpayers<-read.csv(paste(path, "AllPayerHIEIDs-2016-08-08.csv", sep=""), stringsAsFactors = FALSE)
+uhi<-read.csv(paste(path, "UhiHIEIDs-2016-08-08.csv", sep=""), stringsAsFactors = FALSE)
 
 # Subsets out CAMcare data
 camcare<-subset(allpayers, allpayers$VEND_FULL_NAME=="CAMCARE HEALTH CORPORATION")
@@ -42,7 +42,7 @@ uhi$LastCapitationDate <- format(Sys.time(), "%m/01/%Y")
 uhi$PRACTICE<- "Cooper IM"
 
 # Creates fields with blank values
-uhi$BUS_PHONE_NUMBER	<- "NA"
+uhi$BUS_PHONE_NUMBER  <- "NA"
 uhi$CURR_PCP_ADDRESS_LINE_1	<- "NA"
 uhi$CURR_PCP_ADDRESS_LINE_2	<- "NA"
 uhi$CURR_PCP_CITY	<- "NA"
@@ -92,32 +92,32 @@ combined$dupetype <- ifelse(combined$HIEID %in% dupes$HIEID, "dupe1", combined$d
 # Identifies known twins
 twins<-subset(combined,
               combined$SUBSCRIBER_ID==102239994 | 
-              combined$SUBSCRIBER_ID==102239993 | 
-              combined$SUBSCRIBER_ID==101760611 | 
-              combined$SUBSCRIBER_ID==101957967 |
-              combined$SUBSCRIBER_ID==101758438 | 
-              combined$SUBSCRIBER_ID==101854600 |
-              combined$SUBSCRIBER_ID==106274833 |
-              combined$SUBSCRIBER_ID==106274834 |
-              combined$SUBSCRIBER_ID==108034384 |
-              combined$SUBSCRIBER_ID==108034385 |
-              combined$SUBSCRIBER_ID==110119063 |
-              combined$SUBSCRIBER_ID==110119064 |
-              combined$SUBSCRIBER_ID=="H71260169" |
-              combined$SUBSCRIBER_ID=="H71260168" |
-              combined$SUBSCRIBER_ID=="H71514576" |
-              combined$SUBSCRIBER_ID=="H71514574" |
-              combined$SUBSCRIBER_ID=="H71570565" |
-              combined$SUBSCRIBER_ID=="H71570564" |
-              combined$SUBSCRIBER_ID=="H71598715" |
-              combined$SUBSCRIBER_ID=="H71595647" |
-              combined$SUBSCRIBER_ID=="H71579478" |
-              combined$SUBSCRIBER_ID=="H71579477" |
-              combined$SUBSCRIBER_ID=="H35022345" |
-              combined$SUBSCRIBER_ID=="H35022337" |
-              combined$SUBSCRIBER_ID=="H474184"   |
-              combined$SUBSCRIBER_ID=="H474159"
-              )
+                combined$SUBSCRIBER_ID==102239993 | 
+                combined$SUBSCRIBER_ID==101760611 | 
+                combined$SUBSCRIBER_ID==101957967 |
+                combined$SUBSCRIBER_ID==101758438 | 
+                combined$SUBSCRIBER_ID==101854600 |
+                combined$SUBSCRIBER_ID==106274833 |
+                combined$SUBSCRIBER_ID==106274834 |
+                combined$SUBSCRIBER_ID==108034384 |
+                combined$SUBSCRIBER_ID==108034385 |
+                combined$SUBSCRIBER_ID==110119063 |
+                combined$SUBSCRIBER_ID==110119064 |
+                combined$SUBSCRIBER_ID=="H71260169" |
+                combined$SUBSCRIBER_ID=="H71260168" |
+                combined$SUBSCRIBER_ID=="H71514576" |
+                combined$SUBSCRIBER_ID=="H71514574" |
+                combined$SUBSCRIBER_ID=="H71570565" |
+                combined$SUBSCRIBER_ID=="H71570564" |
+                combined$SUBSCRIBER_ID=="H71598715" |
+                combined$SUBSCRIBER_ID=="H71595647" |
+                combined$SUBSCRIBER_ID=="H71579478" |
+                combined$SUBSCRIBER_ID=="H71579477" |
+                combined$SUBSCRIBER_ID=="H35022345" |
+                combined$SUBSCRIBER_ID=="H35022337" |
+                combined$SUBSCRIBER_ID=="H474184"   |
+                combined$SUBSCRIBER_ID=="H474159"
+)
 
 # Subsets values that are TRUE for duplicate and are not a twin
 duplicates<-subset(combined, combined$duplicate==TRUE | combined$duplicate2== TRUE & !combined$SUBSCRIBER_ID %in% twins$SUBSCRIBER_ID)
@@ -149,6 +149,9 @@ uniques<-reshape::rename(uniques, c(HIEID="Patient ID HIE"))
 uniques$duplicate<-NULL
 uniques$duplicate2<-NULL
 uniques$dupetype<-NULL
+twins$duplicate2<-NULL
+twins$duplicate<-NULL
+twins$dupetype<-NULL
 
 # Adds fields to identify the data as ones imported in bulk from cap list
 twins$MonthlyBulkImport <- "Monthly Import"
