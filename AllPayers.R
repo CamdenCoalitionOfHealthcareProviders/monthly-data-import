@@ -1,9 +1,9 @@
-# Attaches packages the code needs to run#
+# Attaches packages the code needs to run
 suppressMessages(require(reshape))
 suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
-# Sets working directory, reads file and creates a nickname#
+# Sets working directory, reads file and creates a nickname
 wd<-setwd("Y:/monthly import/201608")
 date<-format(Sys.Date(), "%B%Y")
 
@@ -11,7 +11,7 @@ date<-format(Sys.Date(), "%B%Y")
 united<-read.csv(paste(wd,"/",date,"UnitedCapList", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
 horizon <- read.delim(paste(wd,"/",date,"Horizon",".txt",sep = ""), sep="|", quote = "", stringsAsFactors=FALSE)
 
-#Concatenates Provider information
+# Concatenates Provider information
 united$CURR_PCP_FULL_NAME<-paste(united$PROV_LNAME, united$PROV_FNAME, sep=", ")
 
 # Removes unused fields
@@ -32,13 +32,13 @@ united$COSMOS_CUST_SEG<-NULL
 united$LINE_OF_BUSINESS<-NULL
 united$COSMOS_CUST_SEG_DESC<-NULL
 
-horizon$Member_Months  <-	NULL
-horizon$Future_Rx_Costs	<-	NULL
-horizon$Total_Mem_Months	<-	NULL
-horizon$Future_Risk_Costs	<-	NULL
-horizon$Primary_Risk_Factor	<-	NULL
-horizon$Prior_Rx_Costs_Annualized	<-	NULL
-horizon$Prior_Total_Costs_Annualized	<-	NULL
+horizon$Member_Months<-NULL
+horizon$Future_Rx_Costs<-NULL
+horizon$Total_Mem_Months<-NULL
+horizon$Future_Risk_Costs<-NULL
+horizon$Primary_Risk_Factor<-NULL
+horizon$Prior_Rx_Costs_Annualized<-NULL
+horizon$Prior_Total_Costs_Annualized<-NULL
 
 # Renames fields in the united and horizon
 united<-reshape::rename(united, c(DATE_OF_BIRTH="DOB"))
@@ -119,6 +119,7 @@ horizon<-horizon[,order(names(horizon))]
 # Merges united and horizon data
 AllPayers<-rbind(united,horizon)
 
+# Converts Current PCP City to all capital letters
 AllPayers$CURR_PCP_CITY<-toupper(AllPayers$CURR_PCP_CITY)
 
 #Renames vendors to match Current PCP City#
@@ -134,6 +135,7 @@ AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "BROADWAY FAMILY PRACTICE" 
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ACOSTA RAMON"] <- "Acosta"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE BROADWAY_CAMDEN"] <- "Reliance Broadway"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "NEW JERSEY MEDICAL AND HEALTH ASSOCIATES LLC"] <- "Reliance Broadway"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE MEDICAL GROUP"] <- "Reliance Broadway"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE BROADWAY_PENNSAUKEN"] <- "Reliance Pennsauken"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "CAMCARE HEALTH CORPORATION"] <- "CAMcare"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER AMBULATORY PEDIATRICS"] <- "Cooper Pediatrics"
@@ -162,6 +164,7 @@ AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA FAMILY MEDICINE-COOPER RI
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA MEDICAL GROUP"] <- "Virtua"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA MEDICAL GROUP PA"] <- "Virtua"
 
+# Sets as dataframe
 AllPayers<-as.data.frame(AllPayers)
 
 # Removes fields that don't need to go to CareEvolution from the CareEvolution version of the file
@@ -171,8 +174,19 @@ AllPayers$MEMB_ETHNICITY<-NULL
 # Adds last capitation 
 AllPayers$LastCapitationDate<- format(Sys.time(), "%m/01/%Y") 
 
-#Remove "U" from string to match TrackVia Subscriber IDs
+# Remove "U" from string to match TrackVia Subscriber IDs
 AllPayers$SUBSCRIBER_ID<-gsub("U", "", AllPayers$SUBSCRIBER_ID)
+
+# Function to check for missing data in vector
+missing_practice <- function(x){
+  if (is.na(x) == TRUE) stop ('Dataframe includes missing practices. Fix these before sending to CareEvolution')
+}
+
+# Prints warning message if dataframe is missing practices
+missing_practice(AllPayers$PRACTICE)
+
+# Creates dataframe with records a practice <- These need to be fixed before sending to Nick (!!!)
+NO_PRACTICE<-subset(AllPayers, is.na(AllPayers$PRACTICE))
 
 # Exports file for CareEvolution
 write.csv(AllPayers, (file=paste(format(Sys.Date(), "%Y-%m-%d-"),"AllPayers",  ".csv", sep="")), row.names=FALSE)
