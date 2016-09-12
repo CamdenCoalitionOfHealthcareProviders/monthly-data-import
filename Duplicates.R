@@ -116,7 +116,15 @@ twins<-subset(combined,
                 combined$SUBSCRIBER_ID=="H35022345" |
                 combined$SUBSCRIBER_ID=="H35022337" |
                 combined$SUBSCRIBER_ID=="H474184"   |
-                combined$SUBSCRIBER_ID=="H474159"
+                combined$SUBSCRIBER_ID=="H474159"   |
+                combined$SUBSCRIBER_ID=="H71650351" |
+                combined$SUBSCRIBER_ID=="H71650348" |
+                combined$SUBSCRIBER_ID=="H71646507" |
+                combined$SUBSCRIBER_ID=="H71646508" |
+                combined$SUBSCRIBER_ID=="H71647601" |
+                combined$SUBSCRIBER_ID=="H71647600" |
+                combined$SUBSCRIBER_ID=="H71637280" |
+                combined$SUBSCRIBER_ID=="H71660243"
 )
 
 # Subsets values that are TRUE for duplicate and are not a twin
