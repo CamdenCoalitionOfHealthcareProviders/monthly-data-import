@@ -5,7 +5,6 @@
 # To keep only one Patient ID HIE per set of duplicates in TrackVia, while making 
 # sure we don't lose any data
 
-
 # load libraries
 library(dplyr)
 
