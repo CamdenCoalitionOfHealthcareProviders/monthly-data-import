@@ -80,5 +80,4 @@ write.csv(view_not_dupes, "view_not_dupes_to_upload.csv", row.names = F)
 # To do once you have CSVs:
 # Save as Excel files
 # Remove "NAs" from fields (don't erase, just remove the "NA")
-# Convert scientific notation in Medicaid and Medicare number fields to normal 
-
+# Convert scientific notation in Medicaid and Medicare number fields to normal
