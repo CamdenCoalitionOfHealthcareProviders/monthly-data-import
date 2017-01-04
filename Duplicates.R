@@ -4,11 +4,11 @@ suppressMessages(require(reshape))
 #path<-"Y:/Data Share Monthly/All Payers/"
 
 # Jay's path
-path<-"Y:/Monthly Import/Feb 2016/"
+path<-"Y:/monthly import/201612/"
 
 # Reads in files
-allpayers<-read.csv(paste(path, "AllPayerHIEIDs-2016-08-08.csv", sep=""), stringsAsFactors = FALSE)
-uhi<-read.csv(paste(path, "UhiHIEIDs-2016-08-08.csv", sep=""), stringsAsFactors = FALSE)
+allpayers<-read.csv(paste(path, "AllPayerHIEIDs-2016-12-05.csv", sep=""), stringsAsFactors = FALSE)
+uhi<-read.csv(paste(path, "UhiHIEIDs-2016-12-05.csv", sep=""), stringsAsFactors = FALSE)
 
 # Subsets out CAMcare data
 camcare<-subset(allpayers, allpayers$VEND_FULL_NAME=="CAMCARE HEALTH CORPORATION")
@@ -21,8 +21,8 @@ allpayers<-rbind(rest, camcarehorizon)
 # Renames fields
 uhi<-reshape::rename(uhi, c(HOME_PHONE_NUM="HOME_PHONE_NUMBER"))
 uhi<-reshape::rename(uhi, c(MEMB_INSURANCE="PAYER"))
-uhi<-reshape::rename(uhi, c(Ã¯..Reg.Patient.MRN="Reg.Patient.MRN"))
-allpayers<-reshape::rename(allpayers, c(Ã¯..BUS_PHONE_NUMBER="BUS_PHONE_NUMBER"))
+uhi<-reshape::rename(uhi, c(ï..Reg.Patient.MRN="Reg.Patient.MRN"))
+allpayers<-reshape::rename(allpayers, c(ï..BUS_PHONE_NUMBER="BUS_PHONE_NUMBER"))
 
 # Adds NIC to the uhi Subscriber ID if it's not there 
 uhi$SUBSCRIBER_ID<-ifelse(grepl("NIC", uhi$SUBSCRIBER_ID), uhi$SUBSCRIBER_ID, paste("NIC", uhi$SUBSCRIBER_ID, sep=""))

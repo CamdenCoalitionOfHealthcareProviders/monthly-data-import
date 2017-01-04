@@ -4,11 +4,12 @@ suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
 # Sets working directory, reads file and creates a nickname
-wd <- setwd("Y:/monthly import/may2016")
+wd <- setwd("Y:/monthly import/201701/")
 date <- format(Sys.Date(), "%B%Y")
 
 # Reads in file whose file name is formatted January2016CAMCareCapList.csv
-camcare  <-  read.csv(paste(wd,"/",date,"CAMCareCapList", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+camcare  <-  read.csv(paste(wd,"/","January2017CAMCareCapList", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+# camcare  <-  read.csv("Y:/monthly import/201609/raw data/September2016CAMCareCapList.csv", sep="", header=TRUE, stringsAsFactors = FALSE)
 
 # Concatenates Provider information
 camcare$CURR_PCP_FULL_NAME  <-  paste(camcare$PROV_LNAME, camcare$PROV_FNAME, sep=", ")
