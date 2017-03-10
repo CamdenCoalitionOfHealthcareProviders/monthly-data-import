@@ -2,15 +2,15 @@
 suppressMessages(require(reshape))
 suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
-library(dplyr)
 
 # Sets working directory, reads file and creates a nickname
-wd <- setwd("Y:/monthly import/201701/")
+setwd("Y:/monthly import/201703/raw")
+wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 
 # Reads in files in format March2015Horizon.csv
-united <- read.csv(paste(wd,"/",date,"UnitedCapList", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
-horizon <- read.delim(paste(wd,"/",date,"HorizonCapList",".txt",sep = ""), sep="|", quote = "", stringsAsFactors=FALSE)
+united <- read.csv(paste(wd,"/",date,"United", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
+horizon <- read.delim(paste(wd,"/",date,"Horizon",".txt",sep = ""), sep="|", quote = "", stringsAsFactors=FALSE)
 
 # Concatenates Provider information
 united$CURR_PCP_FULL_NAME <- paste(united$PROV_LNAME, united$PROV_FNAME, sep=", ")
@@ -137,6 +137,7 @@ AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ACOSTA RAMON"] <- "Acosta"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE BROADWAY_CAMDEN"] <- "Reliance Broadway"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "NEW JERSEY MEDICAL AND HEALTH ASSOCIATES LLC"] <- "Reliance Broadway"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE MEDICAL GROUP"] <- "Reliance Broadway"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE MEDICAL GROUP LLC"] <- "Reliance Broadway"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RELIANCE BROADWAY_PENNSAUKEN"] <- "Reliance Pennsauken"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "CAMCARE HEALTH CORPORATION"] <- "CAMcare"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "COOPER AMBULATORY PEDIATRICS"] <- "Cooper Pediatrics"
@@ -157,7 +158,7 @@ AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "OSBORN FAMILY PRACTICE_CAMDEN"] 
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "PROJECT HOPE"] <- "Project Hope"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "PROJECT HOPE HOMELESS PROGRAM"] <- "Project Hope"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RIVER PRIMARY CARE CENTER"] <- "Reliance River"
-AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MED  SVCS"] <- "St. Lukes"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MED SVCS"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKES CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE’S CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
@@ -195,4 +196,16 @@ NO_PRACTICE <- subset(AllPayers, is.na(AllPayers$PRACTICE))
 write.csv(AllPayers, (file=paste(format(Sys.Date(), "%Y-%m-%d-"),"AllPayers",  ".csv", sep="")), row.names=FALSE)
 
 # Breakdown by practice: CSV file
-filter(all) %>% group_by(PRACTICE, Source) %>% count() %>% write.csv("practice_count.csv", row.names = F)
+library(dplyr)
+
+AllPayers %>% 
+  group_by(PRACTICE, Source) %>% 
+  count() %>% 
+  write.csv("practice_count.csv", row.names = F)
+
+# PCP of NO_PRACTICE
+NO_PRACTICE %>% 
+  group_by(VEND_FULL_NAME, Source) %>% 
+  count() %>%
+  write.csv("no_practice_count.csv", row.names = F)
+  
