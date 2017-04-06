@@ -4,10 +4,10 @@ library(dplyr)
 library(readr)
 
 # Set working directory 
-setwd("Y:/monthly import/201703/raw/ngii/")
+setwd("Y:/monthly import/201704/ngii/")
 
 # Read only the first sheet of the excel file and convert to data frame
-data <- read_csv("March 2017 Active Residents List.csv")
+data <- read_csv("Active Residents List April 2017.csv")
 
 # Sets all blanks cells to NA
 data[data==""] <- NA
@@ -23,7 +23,6 @@ data2 <- data2[-c(1),]
 
 # Deletes the row with the Super's Unit
 data3 <- data2[!(data2$`Household Member Name`=="Super'S, Unit"),]
-
 
 # Separates the Apt field 
 data3$Floor = as.character(lapply(strsplit(as.character(data3$`Apt#`), split="-"), "[", 1))
@@ -81,7 +80,8 @@ data5 <- reshape::rename(data5, c(Household.Member.Name="Household Member Name")
 # Removes all NA values
 data5[is.na(data5)] <- ""
 
+# Removes duplicate rows (all blanks except for Apt. No., Date Last Resident List)
+data6 <- subset(data5, Community != "")
+
 # Exports csv file
-write.csv(data5,(file=paste ( format(Sys.Date(), "%Y-%m-%d-"),"NGII-TrackVia-Import", ".csv", sep="")), row.names=FALSE)
-
-
+write.csv(data6,(file=paste ( format(Sys.Date(), "%Y-%m-%d-"),"NGII-TrackVia-Import", ".csv", sep="")), row.names=FALSE)

@@ -4,13 +4,16 @@ suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
 # Sets working directory, reads file and creates a nickname
-setwd("Y:/monthly import/201703/raw")
+setwd("Y:/monthly import/201704/raw")
 wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 
 # Reads in files in format March2015Horizon.csv
 united <- read.csv(paste(wd,"/",date,"United", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
 horizon <- read.delim(paste(wd,"/",date,"Horizon",".txt",sep = ""), sep="|", quote = "", stringsAsFactors=FALSE)
+
+# De-duplicate horizon file
+horizon <- unique(horizon)
 
 # Concatenates Provider information
 united$CURR_PCP_FULL_NAME <- paste(united$PROV_LNAME, united$PROV_FNAME, sep=", ")
@@ -42,24 +45,24 @@ horizon$Prior_Rx_Costs_Annualized <- NULL
 horizon$Prior_Total_Costs_Annualized <- NULL
 
 # Renames fields in the united and horizon
-united <- rename(united, c(DATE_OF_BIRTH="DOB"))
-united <- rename(united, c(MEMB_GENDER="GENDER"))
-united <- rename(united, c(PROVIDER_ID="CURR_PCP_ID"))
-united <- rename(united, c(PROV_PHONE="PHONE_NUMBER"))
-united <- rename(united, c(PROV_ADDRESS_LINE_1="CURR_PCP_ADDRESS_LINE_1"))
-united <- rename(united, c(PROV_ADDRESS_LINE_2="CURR_PCP_ADDRESS_LINE_2"))
-united <- rename(united, c(PROV_CITY="CURR_PCP_CITY"))
-united <- rename(united, c(PROV_STATE="CURR_PCP_STATE"))
-united <- rename(united, c(PROV_ZIP="CURR_PCP_ZIP"))
-united <- rename(united, c(PAYEE_NAME="VEND_FULL_NAME"))
-horizon <- rename(horizon, c(Subscriber_ID="SUBSCRIBER_ID"))
-horizon <- rename(horizon, c(Gender="GENDER"))
-horizon <- rename(horizon, c(SSN="SOCIAL_SEC_NO"))
+united <- rename(united, DOB = DATE_OF_BIRTH)
+united <- rename(united, GENDER = MEMB_GENDER)
+united <- rename(united, CURR_PCP_ID = PROVIDER_ID)
+united <- rename(united, PHONE_NUMBER = PROV_PHONE)
+united <- rename(united, CURR_PCP_ADDRESS_LINE_1 = PROV_ADDRESS_LINE_1)
+united <- rename(united, CURR_PCP_ADDRESS_LINE_2 = PROV_ADDRESS_LINE_2)
+united <- rename(united, CURR_PCP_CITY = PROV_CITY)
+united <- rename(united, CURR_PCP_STATE = PROV_STATE)
+united <- rename(united, CURR_PCP_ZIP = PROV_ZIP)
+united <- rename(united, VEND_FULL_NAME = PAYEE_NAME)
+horizon <- rename(horizon, SUBSCRIBER_ID = Subscriber_ID)
+horizon <- rename(horizon, GENDER = Gender)
+horizon <- rename(horizon, SOCIAL_SEC_NO = SSN) 
 
 # Adds necessary fields to the horizon file for merging
-horizon$MEDICARE_NO	<-	""
-horizon$MEMB_ETHNICITY	<-	""
-horizon$MEMB_LANGUAGE	<-	""
+horizon$MEDICARE_NO	<- ""
+horizon$MEMB_ETHNICITY <- ""
+horizon$MEMB_LANGUAGE	<- ""
 
 # Maps languages in the united file to the full name of the language
 united$MEMB_LANGUAGE <- as.character(united$MEMB_LANGUAGE)
@@ -160,11 +163,15 @@ AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "PROJECT HOPE HOMELESS PROGRAM"] 
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "RIVER PRIMARY CARE CENTER"] <- "Reliance River"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MED SVCS"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKES CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MED  SVCS"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE’S CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ST LUKE'S CATHOLIC MEDICAL SERVICES INC"] <- "St. Lukes"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA FAMILY MEDICINE-COOPER RIVER"] <- "Virtua"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA MEDICAL GROUP"] <- "Virtua"
 AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "VIRTUA MEDICAL GROUP PA"] <- "Virtua"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "NELSON HOMER L"] <- "Broadway Community"
+AllPayers$PRACTICE[AllPayers$VEND_FULL_NAME == "ERVILUS PATRICK"] <- "Broadway Community"
+
 
 # Sets as dataframe
 AllPayers <- as.data.frame(AllPayers)
