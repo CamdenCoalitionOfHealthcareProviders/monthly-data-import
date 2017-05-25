@@ -1,19 +1,23 @@
+# Clean NGII Patient List
+
 # Read in packages
 library("reshape")
 library(dplyr)
 library(readr)
+library(janitor)
 
 # Set working directory 
-setwd("Y:/monthly import/201704/ngii/")
+setwd("Y:/monthly import/201705/ngii/")
 
-# Read only the first sheet of the excel file and convert to data frame
-data <- read_csv("Active Residents List April 2017.csv")
+# Read only the first sheet of the CSV file (converted from Excel)
+data <- read_csv("Active Residents Report May 2017.csv")
 
 # Sets all blanks cells to NA
-data[data==""] <- NA
+# data[data==""] <- NA
 
-# Removes rows that are all NA
-data2 <- data[apply(data, 1, function(y) !all(is.na(y))),]
+# Removes rows and columns that are all NA
+# data2 <- data[apply(data, 1, function(y) !all(is.na(y))),]
+data2 <- data %>% remove_empty_cols() %>% remove_empty_rows()
 
 # Remove 1st three rows to leave header row up top
 data2 <- data2[-c(1:3),]
@@ -77,11 +81,16 @@ data5 <- head(data4,-3)
 # Renames Household Member Name
 data5 <- reshape::rename(data5, c(Household.Member.Name="Household Member Name"))
 
-# Removes all NA values
-data5[is.na(data5)] <- ""
+# # Removes all NA values
+# data5[is.na(data5)] <- ""
 
 # Removes duplicate rows (all blanks except for Apt. No., Date Last Resident List)
 data6 <- subset(data5, Community != "")
 
+# Remove empy columns (using Janitor package)
+data7 <- remove_empty_cols(data6)
+
+# Remove column: Apt# (keep Apt.No)
+
 # Exports csv file
-write.csv(data6,(file=paste ( format(Sys.Date(), "%Y-%m-%d-"),"NGII-TrackVia-Import", ".csv", sep="")), row.names=FALSE)
+write.csv(data7,(file=paste ( format(Sys.Date(), "%Y-%m-%d-"),"NGII-TrackVia-Import", ".csv", sep="")), na = "", row.names=FALSE)

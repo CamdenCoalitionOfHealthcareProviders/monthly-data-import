@@ -1,14 +1,18 @@
+# De-duplicate AllPayers files from CareEvolution
+
+# Load libraries
 suppressMessages(require(reshape))
+library(janitor)
 
 # Working directory path
-path <- "Y:/monthly import/201704/"
+path <- "Y:/monthly import/201705/"
 
 # Set working directory where files will be saved
 setwd(path)
 
 # Reads in files
-allpayers <- read.csv(paste(path, "AllPayerHIEIDs-2017-04-05.csv", sep=""), stringsAsFactors = FALSE)
-uhi <- read.csv(paste(path, "UhiHIEIDs-2017-04-05.csv", sep=""), stringsAsFactors = FALSE)
+allpayers <- read.csv(paste(path, "AllPayerHIEIDs-2017-05-03.csv", sep=""), stringsAsFactors = FALSE)
+uhi <- read.csv(paste(path, "UhiHIEIDs-2017-05-03.csv", sep=""), stringsAsFactors = FALSE)
 
 # Subsets out CAMcare data
 camcare <- subset(allpayers, allpayers$VEND_FULL_NAME=="CAMCARE HEALTH CORPORATION")
@@ -42,19 +46,19 @@ uhi$LastCapitationDate <- format(Sys.time(), "%m/01/%Y")
 uhi$PRACTICE <- "Cooper IM"
 
 # Creates fields with blank values
-uhi$BUS_PHONE_NUMBER  <- "NA"
-uhi$CURR_PCP_ADDRESS_LINE_1	<- "NA"
-uhi$CURR_PCP_ADDRESS_LINE_2	<- "NA"
-uhi$CURR_PCP_CITY	<- "NA"
-uhi$CURR_PCP_ID	<- "NA"
-uhi$CURR_PCP_STATE	<- "NA"
-uhi$CURR_PCP_ZIP	<- "NA"
-uhi$IRS_TAX_ID	<- "NA"
-uhi$MEDICAID_NO	<- "NA"
-uhi$MEDICARE_NO	<- "NA"
-uhi$PAYER	<- "NA"
-uhi$PHONE_NUMBER	<- "NA"
-uhi$VENDOR_ID	<- "NA"
+uhi$BUS_PHONE_NUMBER  <- ""
+uhi$CURR_PCP_ADDRESS_LINE_1	<- ""
+uhi$CURR_PCP_ADDRESS_LINE_2	<- ""
+uhi$CURR_PCP_CITY	<- ""
+uhi$CURR_PCP_ID	<- ""
+uhi$CURR_PCP_STATE	<- ""
+uhi$CURR_PCP_ZIP	<- ""
+uhi$IRS_TAX_ID	<- ""
+uhi$MEDICAID_NO	<- ""
+uhi$MEDICARE_NO	<- ""
+uhi$PAYER	<- ""
+uhi$PHONE_NUMBER	<- ""
+uhi$VENDOR_ID	<- ""
 
 # Sorts columns in both files
 allpayers <- allpayers[,order(names(allpayers))]
@@ -63,9 +67,20 @@ uhi <- uhi[,order(names(uhi))]
 # Binds files horizontally
 combined <- rbind(allpayers, uhi)
 
-# Removes spaces from the phone number fields
+# Removes spaces and hyphens from the phone number fields
 combined$HOME_PHONE_NUMBER <- gsub(" ", "", combined$HOME_PHONE_NUMBER) 
+combined$HOME_PHONE_NUMBER <- gsub("-", "", combined$HOME_PHONE_NUMBER) 
 combined$PHONE_NUMBER <- gsub(" ", "", combined$PHONE_NUMBER)
+combined$PHONE_NUMBER <- gsub("-", "", combined$PHONE_NUMBER)
+
+# Remove scientific notation from Medicaid and Medicaire Numbers
+options(scipen=999)
+combined$MEDICAID_NO <- as.numeric(as.character(combined$MEDICAID_NO))
+combined$MEDICARE_NO <- as.numeric(as.character(combined$MEDICARE_NO))
+
+# Remove hyphen from CURR_PCP_ZIP and MEMB_ZIP columns
+combined$CURR_PCP_ZIP <- gsub("-", "", combined$CURR_PCP_ZIP)
+combined$MEMB_ZIP <- gsub("-", "", combined$MEMB_ZIP)
 
 # Changes case of HIE ID to lowercase
 combined$HIEID <- tolower(combined$HIEID)
@@ -170,9 +185,9 @@ twins$MonthlyBulkImport <- "Monthly Import"
 uniques$MonthlyBulkImport <- "Monthly Import"
 
 # Exports files
-write.csv(twins, paste(Sys.Date(), "-",file="Twins-New-HIE-ID",".csv", sep=""), row.names = FALSE)
-write.csv(duplicates, paste(Sys.Date(), "-",file="HIE-Delete",".csv", sep=""), row.names = FALSE)
-write.csv(uniques, paste(Sys.Date(),"-",file="TrackVia-Import", ".csv", sep=""), row.names = FALSE)
+write.csv(twins, paste(Sys.Date(), "-",file="Twins-New-HIE-ID",".csv", sep=""), na = "", row.names = FALSE)
+write.csv(duplicates, paste(Sys.Date(), "-",file="HIE-Delete",".csv", sep=""), na = "", row.names = FALSE)
+write.csv(uniques, paste(Sys.Date(),"-",file="TrackVia-Import", ".csv", sep=""), na = "", row.names = FALSE)
 
 
 
@@ -181,7 +196,7 @@ write.csv(uniques, paste(Sys.Date(),"-",file="TrackVia-Import", ".csv", sep=""),
 # Match on HIE ID, Source, DOB in uniques and duplicates
 library(dplyr)
 
-match_duplicates_uniques <- semi_join(duplicates, uniques, by = c("HIEID" = "Patient ID HIE",
+match_duplicates_uniques <- semi_join(duplicates, uniques, by = c("HIEID" = "HIEID",
                                       "PRACTICE" = "PRACTICE",
                                       "Source" = "Source", 
                                       "MEMB_FIRST_NAME" = "MEMB_FIRST_NAME", 

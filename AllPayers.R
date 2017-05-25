@@ -4,7 +4,7 @@ suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
 # Sets working directory, reads file and creates a nickname
-setwd("Y:/monthly import/201704/raw")
+setwd("Y:/monthly import/201705/raw")
 wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 
@@ -44,7 +44,7 @@ horizon$Primary_Risk_Factor <- NULL
 horizon$Prior_Rx_Costs_Annualized <- NULL
 horizon$Prior_Total_Costs_Annualized <- NULL
 
-# Renames fields in the united and horizon
+# Renames fields in the United and Horizon cap lists
 united <- rename(united, DOB = DATE_OF_BIRTH)
 united <- rename(united, GENDER = MEMB_GENDER)
 united <- rename(united, CURR_PCP_ID = PROVIDER_ID)
@@ -55,11 +55,12 @@ united <- rename(united, CURR_PCP_CITY = PROV_CITY)
 united <- rename(united, CURR_PCP_STATE = PROV_STATE)
 united <- rename(united, CURR_PCP_ZIP = PROV_ZIP)
 united <- rename(united, VEND_FULL_NAME = PAYEE_NAME)
+
 horizon <- rename(horizon, SUBSCRIBER_ID = Subscriber_ID)
 horizon <- rename(horizon, GENDER = Gender)
 horizon <- rename(horizon, SOCIAL_SEC_NO = SSN) 
 
-# Adds necessary fields to the horizon file for merging
+# Adds necessary fields to the Horizon file for merging
 horizon$MEDICARE_NO	<- ""
 horizon$MEMB_ETHNICITY <- ""
 horizon$MEMB_LANGUAGE	<- ""
@@ -128,10 +129,12 @@ AllPayers$CURR_PCP_CITY <- toupper(AllPayers$CURR_PCP_CITY)
 
 #Renames vendors to match Current PCP City#
 AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "LOURDES MEDICAL ASSOCIATES" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "LOURDES MEDICAL ASSOCIATES_CAMDEN"
-AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "LOURDES MEDICAL ASSOCIATES PA" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "LOURDES MEDICAL ASSOCIATES_CAMDEN"          
+AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "LOURDES MEDICAL ASSOCIATES PA" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "LOURDES MEDICAL ASSOCIATES_CAMDEN"
 AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "LOURDES MEDICAL ASSOCIATES" & AllPayers$CURR_PCP_CITY == "PENNSAUKEN"] <- "LOURDES MEDICAL ASSOCIATES_PENNSAUKEN"  
 AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "LOURDES MEDICAL ASSOCIATES PA" & AllPayers$CURR_PCP_CITY == "PENNSAUKEN"] <- "LOURDES MEDICAL ASSOCIATES_PENNSAUKEN"  
 AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "OSBORN FAMILY PRACTICE" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "OSBORN FAMILY PRACTICE_CAMDEN"
+AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "THE OSBORN FAMILY HEALTH CENTER" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "OSBORN FAMILY PRACTICE_CAMDEN"
+AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "THE OSBORN FAMILY HEALTH CENTER INC" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "OSBORN FAMILY PRACTICE_CAMDEN"
 AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "BROADWAY FAMILY PRACTICE" & AllPayers$CURR_PCP_CITY == "CAMDEN"] <- "RELIANCE BROADWAY_CAMDEN"   
 AllPayers$VEND_FULL_NAME[AllPayers$VEND_FULL_NAME == "BROADWAY FAMILY PRACTICE" & AllPayers$CURR_PCP_CITY == "PENNSAUKEN"] <- "RELIANCE BROADWAY_PENNSAUKEN"   
 
@@ -212,7 +215,7 @@ AllPayers %>%
 
 # PCP of NO_PRACTICE
 NO_PRACTICE %>% 
-  group_by(VEND_FULL_NAME, Source) %>% 
+  group_by(VEND_FULL_NAME, Source, CURR_PCP_CITY) %>% 
   count() %>%
   write.csv("no_practice_count.csv", row.names = F)
   
