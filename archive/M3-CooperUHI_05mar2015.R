@@ -1,9 +1,11 @@
-date.of.pull <- tolower(strftime(as.POSIXct("2016-02-01"), format = "%m%d%Y"))
-data.directory <- paste("Y:/Monthly Import/Feb 2016/")
+date.of.pull <- tolower(strftime(as.POSIXct("2017-06-01"), format = "%m%d%Y"))
+data.directory <- paste("Y:/monthly import/201706/raw/")
 file.name.stem <- "3 cooper sch data"
 date<-format(Sys.Date(), "%B%Y")
+setwd(data.directory)
 
-IM.Visits <- read.delim(paste(data.directory,file.name.stem,"_",date.of.pull,".txt",sep = ""), dec=",", quote = "")
+IM.Visits <- read.delim(paste(data.directory,file.name.stem,"_",date.of.pull,"_1.txt",sep = ""), dec=",", quote = "")
+IM.Visits <- read.delim("3 cooper sch data_06012017_064121_1.txt"), sep = ""), dec=",", quote = "")
 
 write.csv(IM.Visits, file="IM Visits Original.csv")
 

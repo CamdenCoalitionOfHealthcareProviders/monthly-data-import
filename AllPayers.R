@@ -1,14 +1,16 @@
 # Attaches packages the code needs to run
-suppressMessages(require(reshape))
+# suppressMessages(require(reshape))
 suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
+library(dplyr)
+
 # Sets working directory, reads file and creates a nickname
-setwd("Y:/monthly import/201705/raw")
+setwd("Y:/monthly import/201706/raw")
 wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 
-# Reads in files in format March2015Horizon.csv
+# Reads in files in format March2015Horizon.txt (or .csv)
 united <- read.csv(paste(wd,"/",date,"United", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
 horizon <- read.delim(paste(wd,"/",date,"Horizon",".txt",sep = ""), sep="|", quote = "", stringsAsFactors=FALSE)
 
@@ -206,7 +208,7 @@ NO_PRACTICE <- subset(AllPayers, is.na(AllPayers$PRACTICE))
 write.csv(AllPayers, (file=paste(format(Sys.Date(), "%Y-%m-%d-"),"AllPayers",  ".csv", sep="")), row.names=FALSE)
 
 # Breakdown by practice: CSV file
-library(dplyr)
+# library(dplyr)
 
 AllPayers %>% 
   group_by(PRACTICE, Source) %>% 

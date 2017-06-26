@@ -4,7 +4,7 @@ suppressMessages(require(zipcode))
 suppressMessages(require(gtools))
 
 # Sets working directory, reads file and creates a nickname
-setwd("Y:/monthly import/201705/raw")
+setwd("Y:/monthly import/201706/raw")
 wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 

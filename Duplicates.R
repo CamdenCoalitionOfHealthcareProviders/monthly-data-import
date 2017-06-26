@@ -5,14 +5,14 @@ suppressMessages(require(reshape))
 library(janitor)
 
 # Working directory path
-path <- "Y:/monthly import/201705/"
+path <- "Y:/monthly import/201706/"
 
 # Set working directory where files will be saved
 setwd(path)
 
 # Reads in files
-allpayers <- read.csv(paste(path, "AllPayerHIEIDs-2017-05-03.csv", sep=""), stringsAsFactors = FALSE)
-uhi <- read.csv(paste(path, "UhiHIEIDs-2017-05-03.csv", sep=""), stringsAsFactors = FALSE)
+allpayers <- read.csv(paste(path, "AllPayerHIEIDs-2017-06-06.csv", sep=""), stringsAsFactors = FALSE)
+uhi <- read.csv(paste(path, "UhiHIEIDs-2017-06-06.csv", sep=""), stringsAsFactors = FALSE)
 
 # Subsets out CAMcare data
 camcare <- subset(allpayers, allpayers$VEND_FULL_NAME=="CAMCARE HEALTH CORPORATION")
@@ -189,14 +189,14 @@ write.csv(twins, paste(Sys.Date(), "-",file="Twins-New-HIE-ID",".csv", sep=""), 
 write.csv(duplicates, paste(Sys.Date(), "-",file="HIE-Delete",".csv", sep=""), na = "", row.names = FALSE)
 write.csv(uniques, paste(Sys.Date(),"-",file="TrackVia-Import", ".csv", sep=""), na = "", row.names = FALSE)
 
-
+# Find dupe HIE IDs in uniques
 
 ### Experiment to filter duplicates file ###
 
 # Match on HIE ID, Source, DOB in uniques and duplicates
 library(dplyr)
 
-match_duplicates_uniques <- semi_join(duplicates, uniques, by = c("HIEID" = "HIEID",
+match_duplicates_uniques <- semi_join(duplicates, uniques, by = c("HIEID" = "Patient ID HIE",
                                       "PRACTICE" = "PRACTICE",
                                       "Source" = "Source", 
                                       "MEMB_FIRST_NAME" = "MEMB_FIRST_NAME", 
