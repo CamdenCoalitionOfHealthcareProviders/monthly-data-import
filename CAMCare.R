@@ -1,14 +1,14 @@
 # Attaches packages the code needs to run
-suppressMessages(require(reshape))
-suppressMessages(require(zipcode))
-suppressMessages(require(gtools))
+library(reshape)
+library(zipcode)
+library(gtools)
 
 # Sets working directory, reads file and creates a nickname
-setwd("Y:/monthly import/201706/raw")
+setwd("Y:/monthly import/201707/raw")
 wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 
-# Reads in file whose file name is formatted January2016CAMCareCapList.csv
+# Reads in file whose file name is formatted CAMcare.csv
 camcare  <-  read.csv(paste(wd,"/", date, "CAMcare", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
 # camcare  <-  read.csv("Y:/monthly import/201609/raw data/September2016CAMCareCapList.csv", sep="", header=TRUE, stringsAsFactors = FALSE)
 

@@ -7,10 +7,10 @@ library(readr)
 library(janitor)
 
 # Set working directory 
-setwd("Y:/monthly import/201706/raw/ngii/")
+setwd("Y:/monthly import/201707/ngii")
 
 # Read only the first sheet of the CSV file (converted from Excel)
-data <- read_csv("Active Residents Report June 2017.csv")
+data <- read_csv("Active Residents List July 2017.csv")
 
 # Sets all blanks cells to NA
 # data[data==""] <- NA

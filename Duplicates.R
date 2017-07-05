@@ -184,27 +184,19 @@ twins$dupetype <- NULL
 twins$MonthlyBulkImport <- "Monthly Import"
 uniques$MonthlyBulkImport <- "Monthly Import"
 
-# Exports files
-write.csv(twins, paste(Sys.Date(), "-",file="Twins-New-HIE-ID",".csv", sep=""), na = "", row.names = FALSE)
-write.csv(duplicates, paste(Sys.Date(), "-",file="HIE-Delete",".csv", sep=""), na = "", row.names = FALSE)
-write.csv(uniques, paste(Sys.Date(),"-",file="TrackVia-Import", ".csv", sep=""), na = "", row.names = FALSE)
-
-# Find dupe HIE IDs in uniques
-
-### Experiment to filter duplicates file ###
-
+# Put list of duplicate HIE IDs in a file to give to HIE vendor
 # Match on HIE ID, Source, DOB in uniques and duplicates
 library(dplyr)
 
 match_duplicates_uniques <- semi_join(duplicates, uniques, by = c("HIEID" = "Patient ID HIE",
-                                      "PRACTICE" = "PRACTICE",
-                                      "Source" = "Source", 
-                                      "MEMB_FIRST_NAME" = "MEMB_FIRST_NAME", 
-                                      "MEMB_LAST_NAME" = "MEMB_LAST_NAME", 
-                                      "DOB" = "DOB",
-                                      "SOCIAL_SEC_NO" = "SOCIAL_SEC_NO", 
-                                      "SUBSCRIBER_ID" = "SUBSCRIBER_ID", 
-                                      "VEND_FULL_NAME" = "VEND_FULL_NAME"))
+                                                                  "PRACTICE" = "PRACTICE",
+                                                                  "Source" = "Source", 
+                                                                  "MEMB_FIRST_NAME" = "MEMB_FIRST_NAME", 
+                                                                  "MEMB_LAST_NAME" = "MEMB_LAST_NAME", 
+                                                                  "DOB" = "DOB",
+                                                                  "SOCIAL_SEC_NO" = "SOCIAL_SEC_NO", 
+                                                                  "SUBSCRIBER_ID" = "SUBSCRIBER_ID", 
+                                                                  "VEND_FULL_NAME" = "VEND_FULL_NAME"))
 
 # Remove match_duplicates_uniques from duplicates to get records to delete in duplicates
 duplicates_2 <- filter(duplicates, Source != "UHI_Nic") %>% anti_join(match_duplicates_uniques) 
@@ -214,6 +206,12 @@ dupe_nic <- filter(duplicates, Source == "UHI_Nic")
 
 dupe_3 <- rbind(duplicates_2, dupe_nic)
 
+# Export files: 
+# Twins: To be added later to TrackVia-Import
+# HIE-Delete: To be sent to HIE vendor
+# TrackVia-Import: To be updated/added to TrackVia
+
+write.csv(twins, paste(Sys.Date(), "-",file="Twins-New-HIE-ID",".csv", sep=""), na = "", row.names = FALSE)
+# write.csv(duplicates, paste(Sys.Date(), "-",file="HIE-Delete",".csv", sep=""), na = "", row.names = FALSE)
 write.csv(dupe_3, paste(Sys.Date(), "-",file="HIE-Delete-2",".csv", sep=""), row.names = FALSE)
-
-
+write.csv(uniques, paste(Sys.Date(),"-",file="TrackVia-Import", ".csv", sep=""), na = "", row.names = FALSE)
