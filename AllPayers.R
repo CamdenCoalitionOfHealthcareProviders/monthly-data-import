@@ -6,16 +6,12 @@ suppressMessages(require(gtools))
 library(dplyr)
 
 # Sets working directory, reads file and creates a nickname
-setwd("Y:/monthly import/201706/raw")
+setwd("Z:/Cap List/Jan Cap List")
 wd <- getwd()
 date <- format(Sys.Date(), "%B%Y")
 
-# Reads in files in format March2015Horizon.txt (or .csv)
+# Reads in file in format March2015United.csv
 united <- read.csv(paste(wd,"/",date,"United", ".csv", sep=""), header=TRUE, stringsAsFactors = FALSE)
-horizon <- read.delim(paste(wd,"/",date,"Horizon",".txt",sep = ""), sep="|", quote = "", stringsAsFactors=FALSE)
-
-# De-duplicate horizon file
-horizon <- unique(horizon)
 
 # Concatenates Provider information
 united$CURR_PCP_FULL_NAME <- paste(united$PROV_LNAME, united$PROV_FNAME, sep=", ")
@@ -38,15 +34,7 @@ united$COSMOS_CUST_SEG <- NULL
 united$LINE_OF_BUSINESS <- NULL
 united$COSMOS_CUST_SEG_DESC <- NULL
 
-horizon$Member_Months <- NULL
-horizon$Future_Rx_Costs <- NULL
-horizon$Total_Mem_Months <- NULL
-horizon$Future_Risk_Costs <- NULL
-horizon$Primary_Risk_Factor <- NULL
-horizon$Prior_Rx_Costs_Annualized <- NULL
-horizon$Prior_Total_Costs_Annualized <- NULL
-
-# Renames fields in the United and Horizon cap lists
+# Renames fields in the United cap list
 united <- rename(united, DOB = DATE_OF_BIRTH)
 united <- rename(united, GENDER = MEMB_GENDER)
 united <- rename(united, CURR_PCP_ID = PROVIDER_ID)
@@ -58,14 +46,6 @@ united <- rename(united, CURR_PCP_STATE = PROV_STATE)
 united <- rename(united, CURR_PCP_ZIP = PROV_ZIP)
 united <- rename(united, VEND_FULL_NAME = PAYEE_NAME)
 
-horizon <- rename(horizon, SUBSCRIBER_ID = Subscriber_ID)
-horizon <- rename(horizon, GENDER = Gender)
-horizon <- rename(horizon, SOCIAL_SEC_NO = SSN) 
-
-# Adds necessary fields to the Horizon file for merging
-horizon$MEDICARE_NO	<- ""
-horizon$MEMB_ETHNICITY <- ""
-horizon$MEMB_LANGUAGE	<- ""
 
 # Maps languages in the united file to the full name of the language
 united$MEMB_LANGUAGE <- as.character(united$MEMB_LANGUAGE)
@@ -86,7 +66,6 @@ united$MEMB_LANGUAGE[united$MEMB_LANGUAGE=="VIE"] <- "Vietnamese"
 
 # Adds text identifiers to Subscriber IDs
 united$SUBSCRIBER_ID <- paste("U", united$SUBSCRIBER_ID, sep="")
-horizon$SUBSCRIBER_ID <- paste("H", horizon$SUBSCRIBER_ID, sep="")
 
 # Sets the MEDICAID_NO field as numeric to get rid of scientific notation
 options(scipen=999)
@@ -98,8 +77,6 @@ united$HOME_PHONE_NUMBER <- gsub("\\(|\\)|\\-|\\ ", "", united$HOME_PHONE_NUMBER
 # Cleans zip codes
 united$MEMB_ZIP <- clean.zipcodes(united$MEMB_ZIP)
 united$CURR_PCP_ZIP <- clean.zipcodes(united$MEMB_ZIP)
-horizon$MEMB_ZIP <- clean.zipcodes(horizon$MEMB_ZIP)
-horizon$CURR_PCP_ZIP <- clean.zipcodes(horizon$CURR_PCP_ZIP)
 
 # Cleans birth dates
 united$DOB <- as.Date(united$DOB, "%m/%d/%Y")
@@ -116,15 +93,12 @@ united <- data.frame(lapply(united, as.character), stringsAsFactors=FALSE)
 # Adds Identification fields
 united$PAYER <- "UNITED"
 united$Source <- "United"
-horizon$PAYER <- "HORIZON"
-horizon$Source <- "Horizon"
 
-# Sorts columns in united and horizon A-Z
+# Sorts columns in united A-Z
 united <- united[,order(names(united))]
-horizon <- horizon[,order(names(horizon))]
 
-# Merges united and horizon data
-AllPayers <- rbind(united,horizon)
+# Merges united data
+AllPayers <- rbind(united)
 
 # Converts Current PCP City to all capital letters
 AllPayers$CURR_PCP_CITY <- toupper(AllPayers$CURR_PCP_CITY)
@@ -220,4 +194,4 @@ NO_PRACTICE %>%
   group_by(VEND_FULL_NAME, Source, CURR_PCP_CITY) %>% 
   count() %>%
   write.csv("no_practice_count.csv", row.names = F)
-  
+
