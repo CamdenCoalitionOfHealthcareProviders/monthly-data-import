@@ -59,7 +59,7 @@ aco <- read_csv(paste0(path, "Capitation List.csv"))
 
 # Changes to individual fields
 # `Pt Name` needs to be split into MEMB_FIRST_NAME and MEMB_LAST_NAME
-aco <-  aco %>% 
+aco <-  aco %>%
   mutate(MEMB_LAST_NAME = str_split(`Pt Name`, ", ") %>% sapply("[", 1),
          MEMB_FIRST_NAME = str_split(aco$`Pt Name`, ", ") %>% sapply("[", 2))
 
@@ -71,13 +71,14 @@ aco <- aco %>%
 
 # `Provider Name`: Remove extra spaces and asterisks
 # Remove extra spaces and asterisks, and space + commas
-aco <- aco %>% 
+aco <- aco %>%
   mutate(CURR_PCP_FULL_NAME = str_replace_all(`Provider Name`, '[[:space:]]{2,16}\\*', "")
          %>% str_replace_all(' ,', ", "))
 
-# `Phone Number`: Remove hyphens and parentheses HOME_PHONE_NUMBER
+# `Phone Number`: Remove hyphens, parentheses, and 'None' for HOME_PHONE_NUMBER
 aco <- aco %>%
-  mutate(HOME_PHONE_NUMBER = str_replace_all(`Phone Number`, "-|\\(|\\)", "") )
+  mutate(HOME_PHONE_NUMBER = str_replace_all(`Phone Number`, "-|\\(|\\)|None| ", "") )
+aco$HOME_PHONE_NUMBER <- substring(aco$HOME_PHONE_NUMBER, 1, 10)
 
 # `Health Plan`: Clean and merge with Payer, with existing Payer values getting preference
 
@@ -127,38 +128,55 @@ aco <- aco %>% mutate(
 # Source column: Source of the data
 # If PAYER is equal to "None", then the Source of Data should be "Medicaid"
 # Need this column to be available in Galileo first
-# ifelse(aco$Payer == 'None', aco$Source == "Medicaid", 
+# ifelse(aco$Payer == 'None', aco$Source == "Medicaid",
 #        )
 
 
 # If PAYER is equal to "None" (that is, a patient is not on MCO capitation list)
 # the value of PAYER should be replaced with the value of gal_health_plan
-
 aco$payer_test <- ifelse(aco$Payer == 'None', aco$gal_health_plan, aco$Payer)
-select(aco, Payer, gal_health_plan, payer_test)
 
+# MonthlyBulkImport
+aco$MonthlyBulkImport <- "Monthly Import"
+aco$LastCapitationDate <- format(Sys.time(), "%m/01/%Y")
 
+# `Date of Birth`: remove ' 12:00:00 AM' from field
+aco$`Date of Birth` <- aco$`Date of Birth` %>% str_replace_all(" 12:00:00 AM", "")
+aco$`Attribution Begin Date` <- aco$`Attribution Begin Date` %>% str_replace_all(" 12:00:00 AM", "")
+aco$`Attribution End Date` <- aco$`Attribution End Date` %>% str_replace_all(" 12:00:00 AM", "")
+
+# Add columns until they're added into Galileo file
+aco$SOCIAL_SEC_NO <- ""
+aco$MEDICARE_NO <- ""
+aco$Source <- ""
 
 
 # Select Galileo columns, and rename when necessary, to match TrackVia Import file
 # Dplyr: new_col = existing_col
-select(
-  HIEID = `Camden ID`,
+aco_export <- select(aco,
+  CURR_PCP_FULL_NAME,
+  DOB = `Date of Birth`,
+  `Galileo Attributed Practice`,
+  Gender,
+  HOME_PHONE_NUMBER,
+  LastCapitationDate,
+  MCO_Subscriber_ID = `Subscriber ID`,
   MEDICAID_NO = MedicaidID,
-  MEMB_LAST_NAME,
-  MEMB_FIRST_NAME,
+  MEDICARE_NO,
   MEMB_ADDRESS_LINE_1,
   MEMB_CITY,
+  MEMB_FIRST_NAME,
+  MEMB_LAST_NAME,
   MEMB_STATE,
   MEMB_ZIP = `Zip Code`,
-  Gender,
-  DOB = `Date of Birth`,
-#  = `Attribution Begin Date`,
-#  = `Attribution End Date`,
-  CURR_PCP_FULL_NAME,
-  `Galileo Attributed Practice`,
-  = `Health Plan`,
-  Payer,
-  MCO_Subscriber_ID = `Subscriber ID`,
-  HOME_PHONE_NUMBER
+  MonthlyBulkImport,
+  `Patient ID HIE` = `Camden ID`,
+  Payer = payer_test,
+  SOCIAL_SEC_NO,
+  Source
+  #  = `Health Plan`,
+  #  = `Attribution Begin Date`,
+  #  = `Attribution End Date`,
 )
+
+write_csv(aco_export, "y:/aco_cap_list_testing/cap_list.csv")
